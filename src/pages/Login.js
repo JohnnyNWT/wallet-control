@@ -1,13 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import actionUserEmail from '../redux/actions';
+import { actionUserEmail, fetchCoinAPI } from '../redux/actions';
 
 class Login extends React.Component {
   state = {
     email: '',
     password: '',
   };
+
+  async componentDidMount() {
+    const { currenciesDispatch } = this.props;
+    currenciesDispatch();
+  }
 
   handleChange = ({ target }) => {
     const { name, value } = target;
@@ -60,11 +65,13 @@ class Login extends React.Component {
 function mapDispatchToProps(dispatch) {
   return {
     userEmail: (payload) => dispatch(actionUserEmail(payload)),
+    currenciesDispatch: () => dispatch(fetchCoinAPI()),
   };
 }
 
 Login.propTypes = {
   userEmail: PropTypes.func.isRequired,
+  currenciesDispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
