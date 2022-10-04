@@ -3,26 +3,60 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 class WalletForm extends Component {
+  state = {
+    expenseAmount: '',
+    description: '',
+    currency: 'USD',
+    paymentMethod: 'Dinheiro',
+    categorys: 'Alimentação',
+  };
+
+  handleChange = ({ target }) => {
+    const { name, value } = target;
+    this.setState({
+      [name]: value,
+    });
+    console.log(target.active);
+  };
+
   render() {
     const CATEGORY = ['Alimentação', 'Lazer', 'Trabalho', 'Transporte', 'Saúde'];
     const PAYMENT = ['Dinheiro', 'Cartão de crédito', 'Cartão de débito'];
     const { currencies } = this.props;
+    const { expenseAmount, description, currency, paymentMethod, categorys } = this.state;
     return (
       <>
         <label htmlFor="valor">
           Valor:
-          <input data-testid="value-input" type="number" />
+          <input
+            data-testid="value-input"
+            type="number"
+            name="expenseAmount"
+            value={ expenseAmount }
+            onChange={ this.handleChange }
+          />
         </label>
 
         <label htmlFor="description">
           Descrição:
-          <input data-testid="description-input" type="text" />
+          <input
+            data-testid="description-input"
+            type="text"
+            name="description"
+            value={ description }
+            onChange={ this.handleChange }
+          />
         </label>
 
         <label htmlFor="selectCoin">
-          <select data-testid="currency-input">
-            {currencies.map((currency, key) => (
-              <option key={ key }>{ currency }</option>
+          <select
+            data-testid="currency-input"
+            name="currency"
+            active={ currency }
+            onClick={ this.handleChange }
+          >
+            {currencies.map((currencie, key) => (
+              <option key={ key }>{ currencie }</option>
             ))}
             ;
           </select>
@@ -30,7 +64,12 @@ class WalletForm extends Component {
 
         <label htmlFor="payment">
           Método de pagamento:
-          <select data-testid="method-input">
+          <select
+            data-testid="method-input"
+            name="paymentMethod"
+            active={ paymentMethod }
+            onClick={ this.handleChange }
+          >
             {PAYMENT.map((payment, key) => (<option key={ key }>{ payment }</option>))}
             ;
           </select>
@@ -38,7 +77,12 @@ class WalletForm extends Component {
 
         <label htmlFor="category">
           Categoria:
-          <select data-testid="tag-input">
+          <select
+            data-testid="tag-input"
+            name="categorys"
+            active={ categorys }
+            onClick={ this.handleChange }
+          >
             {CATEGORY.map((category, key) => (<option key={ key }>{ category }</option>))}
             ;
           </select>
