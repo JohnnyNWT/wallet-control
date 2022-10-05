@@ -1,4 +1,6 @@
 const INITIAL_STATE = {
+  expenses: [],
+  data: [],
   wallet: {
     currencies: [],
     expenses: [],
@@ -13,6 +15,16 @@ const wallet = (state = INITIAL_STATE, action) => {
     return {
       ...state,
       currencies: action.currencies,
+    };
+  case 'ADD_EXPENSE':
+    return {
+      ...state,
+      expenses: [...state.expenses, action.payload],
+    };
+  case 'DATA':
+    return {
+      ...state,
+      data: action.payload,
     };
   default:
     return state;

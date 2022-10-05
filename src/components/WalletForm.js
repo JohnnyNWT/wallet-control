@@ -1,44 +1,73 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { actionExpense, actionData } from '../redux/actions';
 
 class WalletForm extends Component {
   state = {
-    expenseAmount: '',
-    description: '',
+    value: '',
     currency: 'USD',
-    paymentMethod: 'Dinheiro',
-    categorys: 'Alimentação',
+    method: 'Dinheiro',
+    tag: 'Alimentação',
+    description: '',
+    id: 0,
+    exchangeRates: [],
   };
+
+  // async componentDidMount() {
+  //   const ENDPOINT = 'https://economia.awesomeapi.com.br/json/all';
+  //   const response = await fetch(ENDPOINT);
+  //   const data = await response.json();
+  //   this.setState({exchangeRates: data});
+  // }
 
   handleChange = ({ target }) => {
     const { name, value } = target;
     this.setState({
       [name]: value,
     });
-    console.log(target.active);
+  };
+
+  handleClick = async () => {
+    const { addExpense, getData } = this.props;
+    const ENDPOINT = 'https://economia.awesomeapi.com.br/json/all';
+    const response = await fetch(ENDPOINT);
+    const data = await response.json();
+    getData(data);
+    addExpense(this.state);
+    this.setState((prevState) => ({
+      id: prevState.id + 1,
+      value: '',
+      description: '',
+      currency: 'USD',
+      method: 'Dinheiro',
+      exchangeRates: data,
+      tag: 'Alimentação',
+    }));
   };
 
   render() {
-    const CATEGORY = ['Alimentação', 'Lazer', 'Trabalho', 'Transporte', 'Saúde'];
+    const CATEGORY = ['Lazer', 'Trabalho', 'Transporte', 'Saúde'];
     const PAYMENT = ['Dinheiro', 'Cartão de crédito', 'Cartão de débito'];
     const { currencies } = this.props;
-    const { expenseAmount, description, currency, paymentMethod, categorys } = this.state;
+    const { value, description, currency, method, tag } = this.state;
     return (
       <>
         <label htmlFor="valor">
           Valor:
+          {' '}
           <input
             data-testid="value-input"
             type="number"
-            name="expenseAmount"
-            value={ expenseAmount }
+            name="value"
+            value={ value }
             onChange={ this.handleChange }
           />
         </label>
 
         <label htmlFor="description">
           Descrição:
+          {' '}
           <input
             data-testid="description-input"
             type="text"
@@ -52,11 +81,11 @@ class WalletForm extends Component {
           <select
             data-testid="currency-input"
             name="currency"
-            active={ currency }
-            onClick={ this.handleChange }
+            value={ currency }
+            onChange={ this.handleChange }
           >
             {currencies.map((currencie, key) => (
-              <option key={ key }>{ currencie }</option>
+              <option key={ key } value={ currencie }>{ currencie }</option>
             ))}
             ;
           </select>
@@ -64,29 +93,37 @@ class WalletForm extends Component {
 
         <label htmlFor="payment">
           Método de pagamento:
+          {' '}
           <select
             data-testid="method-input"
-            name="paymentMethod"
-            active={ paymentMethod }
-            onClick={ this.handleChange }
+            name="method"
+            value={ method }
+            onChange={ this.handleChange }
           >
-            {PAYMENT.map((payment, key) => (<option key={ key }>{ payment }</option>))}
+            {PAYMENT.map((payment, key) => (
+              <option key={ key } value={ payment }>{ payment }</option>
+            ))}
             ;
           </select>
         </label>
 
         <label htmlFor="category">
           Categoria:
+          {' '}
           <select
             data-testid="tag-input"
-            name="categorys"
-            active={ categorys }
-            onClick={ this.handleChange }
+            name="tag"
+            value={ tag }
+            onChange={ this.handleChange }
           >
-            {CATEGORY.map((category, key) => (<option key={ key }>{ category }</option>))}
+            <option value="Alimentação">Alimentação</option>
+            {CATEGORY.map((category, key) => (
+              <option key={ key } value={ category }>{ category }</option>
+            ))}
             ;
           </select>
         </label>
+        <button type="submit" onClick={ this.handleClick }>Adicionar despesa</button>
       </>
     );
   }
@@ -98,10 +135,19 @@ function mapStateToProps(state) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    addExpense: (payload) => dispatch(actionExpense(payload)),
+    getData: (payload) => dispatch(actionData(payload)),
+  };
+}
+
 WalletForm.propTypes = {
+  getData: PropTypes.func.isRequired,
+  addExpense: PropTypes.func.isRequired,
   currencies: PropTypes.shape({
     map: PropTypes.func,
   }).isRequired,
 };
 
-export default connect(mapStateToProps)(WalletForm);
+export default connect(mapStateToProps, mapDispatchToProps)(WalletForm);

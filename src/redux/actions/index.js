@@ -1,4 +1,6 @@
 export const actionUserEmail = (payload) => ({ type: 'USER_EMAIL', payload });
+export const actionExpense = (payload) => ({ type: 'ADD_EXPENSE', payload });
+export const actionData = (payload) => ({ type: 'DATA', payload });
 
 export function fetchCoinAPI() {
   return async (dispatch) => {
