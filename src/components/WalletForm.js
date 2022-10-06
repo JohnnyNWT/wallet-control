@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { actionExpense, actionData } from '../redux/actions';
+import { actionExpense, actionData, fetchCoinAPI } from '../redux/actions';
 
 class WalletForm extends Component {
   state = {
@@ -14,12 +14,10 @@ class WalletForm extends Component {
     exchangeRates: [],
   };
 
-  // async componentDidMount() {
-  //   const ENDPOINT = 'https://economia.awesomeapi.com.br/json/all';
-  //   const response = await fetch(ENDPOINT);
-  //   const data = await response.json();
-  //   this.setState({exchangeRates: data});
-  // }
+  async componentDidMount() {
+    const { currenciesDispatch } = this.props;
+    currenciesDispatch();
+  }
 
   handleChange = ({ target }) => {
     const { name, value } = target;
@@ -34,16 +32,19 @@ class WalletForm extends Component {
     const response = await fetch(ENDPOINT);
     const data = await response.json();
     getData(data);
-    addExpense(this.state);
-    this.setState((prevState) => ({
-      id: prevState.id + 1,
-      value: '',
-      description: '',
-      currency: 'USD',
-      method: 'Dinheiro',
+    this.setState({
       exchangeRates: data,
-      tag: 'Alimentação',
-    }));
+    }, () => {
+      addExpense(this.state);
+      this.setState((prevState) => ({
+        id: prevState.id + 1,
+        value: '',
+        description: '',
+        currency: 'USD',
+        method: 'Dinheiro',
+        tag: 'Alimentação',
+      }));
+    });
   };
 
   render() {
@@ -84,7 +85,7 @@ class WalletForm extends Component {
             value={ currency }
             onChange={ this.handleChange }
           >
-            {currencies.map((currencie, key) => (
+            {currencies?.map((currencie, key) => (
               <option key={ key } value={ currencie }>{ currencie }</option>
             ))}
             ;
@@ -139,10 +140,12 @@ function mapDispatchToProps(dispatch) {
   return {
     addExpense: (payload) => dispatch(actionExpense(payload)),
     getData: (payload) => dispatch(actionData(payload)),
+    currenciesDispatch: () => dispatch(fetchCoinAPI()),
   };
 }
 
 WalletForm.propTypes = {
+  currenciesDispatch: PropTypes.func.isRequired,
   getData: PropTypes.func.isRequired,
   addExpense: PropTypes.func.isRequired,
   currencies: PropTypes.shape({
