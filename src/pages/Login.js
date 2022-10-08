@@ -46,6 +46,7 @@ class Login extends React.Component {
           onChange={ this.handleChange }
         />
         <button
+          data-testid="btn"
           type="button"
           disabled={ password.length < MIN_LENGTH || !validEmail }
           onClick={ this.handleClick }
