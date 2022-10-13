@@ -17,9 +17,9 @@ class Header extends Component {
             const { currency, value } = element;
             const { ask } = exchangeRates[currency];
             const convert = Number(total) + (Number(ask) * value);
-            const result = convert.toFixed(2);
+            const result = convert;
             return result;
-          }, 0)}
+          }, 0).toFixed(2)}
         </span>
         <p data-testid="header-currency-field">BRL</p>
       </div>

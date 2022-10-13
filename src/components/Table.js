@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { removeExpense } from '../redux/actions';
 
 class Table extends Component {
+  handleClickRemove = (expense) => {
+    const { removeExpenses } = this.props;
+    console.log(expense);
+    removeExpenses(expense);
+  };
+
   render() {
     const { expenses } = this.props;
     return (
@@ -45,6 +52,15 @@ class Table extends Component {
                   <td>{exchangeValue.toFixed(2)}</td>
                   <td>{conversion.toFixed(2)}</td>
                   <td>{exchangeRates[currency].name}</td>
+                  <td>
+                    <button
+                      type="button"
+                      data-testid="delete-btn"
+                      onClick={ () => this.handleClickRemove(expense) }
+                    >
+                      Excluir
+                    </button>
+                  </td>
                 </tr>
               );
             })}
@@ -61,8 +77,15 @@ function mapStateToProps(state) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    removeExpenses: (expense) => dispatch(removeExpense(expense)),
+  };
+}
+
 Table.propTypes = {
   expenses: PropTypes.arrayOf.isRequired,
+  removeExpenses: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps)(Table);
+export default connect(mapStateToProps, mapDispatchToProps)(Table);
